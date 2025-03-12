@@ -28,30 +28,39 @@ namespace DigitalBookStoreManagement.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //public bool AddItemsToCart(int cartId, CartItem newItem)
-        //{
-        //    var cart = _context.Carts.Include(ci=> ci.CartItems).FirstOrDefault(c => c.CartID == cartId);
-        //    if (cart != null)
-        //    {
-        //        cart.CartItems.Select(ci => new CartItem
-        //        {
-        //            CartID = newItem.CartID,
-        //            BookID = newItem.BookID,
-        //            Price = newItem.Price,
-        //            Quantity = newItem.Quantity,
-        //            TotalAmount = newItem.TotalAmount
+        public bool AddItemsToCart(int userId,CartItem newItem)
+        {
+            var CheckCartExists = _context.Carts.Include(ci => ci.CartItems).FirstOrDefault(c => c.UserID == userId);
+            if (CheckCartExists == null)
+            {
+                var newCart = new Cart { UserID = userId , CreatedDate= DateTime.Now }; 
+                _context.Carts.Add(newCart);
+                _context.SaveChanges();
 
 
 
+            }
 
-        //        }).ToList();
+            var cartItemToAdd = CheckCartExists.CartItems.FirstOrDefault(i => i.BookID == newItem.BookID);
+            if (cartItemToAdd != null) {
+                cartItemToAdd.Quantity = newItem.Quantity;  
+            
+           }
+            cartItemToAdd = new CartItem
+            {
+                CartID= newItem.CartID,
+                BookID = newItem.BookID,
+                Quantity = newItem.Quantity,
+                Price = newItem.Price,
+                TotalAmount= newItem.TotalAmount,
 
 
-        //    }
-        //    return _context.SaveChanges() > 0;
+            };
+            _context.CartItems.Add(cartItemToAdd);
+            return _context.SaveChanges() > 0;
 
 
-        //}
+        }
 
         public async Task UpdateCart(Cart cart)
         {

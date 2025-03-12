@@ -6,7 +6,7 @@ namespace DigitalBookStoreManagement.Repositories
     {
         Task<Cart> GetCartByID(int id);
         Task CreateCart(Cart cart);
-        //bool AddItemsToCart(int cartId, CartItem newItem);
+         bool AddItemsToCart(int userId, CartItem newItem);
         Task UpdateCart(Cart cart);
         Task DeleteCart(int id);
 

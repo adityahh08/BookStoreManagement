@@ -13,6 +13,8 @@ namespace DigitalBookStoreManagement.Models
         public int OrderID { get; set; }
 
         [Required(ErrorMessage = "UserId is Required.")]
+
+        
         public int UserID { get; set; }
 
         [Required(ErrorMessage = "Order Date is Required.")]
@@ -23,6 +25,7 @@ namespace DigitalBookStoreManagement.Models
         //[Range(0.01, double.MaxValue, ErrorMessage = " Total Amount must be greater than zero")]
         public double TotalAmount { get; set; }
 
+        //public string DeliveryAddress { get; set; }
 
         public string? OrderStatus { get; set; }
 

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DigitalBookStoreManagement.Models;
 using DigitalBookStoreManagement.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DigitalBookStoreManagement.Controllers
+
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
@@ -16,8 +19,8 @@ namespace DigitalBookStoreManagement.Controllers
         }
 
 
-
-        [HttpGet("{id}")]
+        [Authorize(Roles ="Admin, Customer")]
+        [HttpGet("get-cart-by-id/{id}")]
         public async Task<ActionResult<Cart>> GetCart(int id)
         {
             var cart = await _cartRepository.GetCartByID(id);
@@ -28,14 +31,18 @@ namespace DigitalBookStoreManagement.Controllers
             return Ok(cart);
         }
 
-        [HttpPost]
+
+        [Authorize(Roles ="Customer")]
+        [HttpPost("add-cart")]
         public async Task<ActionResult<Cart>> CreateCart(Cart cart)
         {
             await _cartRepository.CreateCart(cart);
             return CreatedAtAction(nameof(GetCart), new { id = cart.CartID }, cart);
         }
 
-        [HttpPut("{id}")]
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut("update-cart/{id}")]
         public async Task<IActionResult> UpdateCart(int id, Cart cart)
         {
             if (id != cart.CartID)
@@ -47,7 +54,8 @@ namespace DigitalBookStoreManagement.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [Authorize(Roles = "Customer")]
+        [HttpDelete("delete-cart/{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {
             var cart = await _cartRepository.GetCartByID(id);
@@ -60,7 +68,7 @@ namespace DigitalBookStoreManagement.Controllers
             return NoContent();
         }
 
-
+        [Authorize(Roles = "Customer")]
         [HttpPost("checkout/{cartId}")]
         public bool Checkout(int cartId)
         {
@@ -71,16 +79,18 @@ namespace DigitalBookStoreManagement.Controllers
             }
             return false;
         }
-        //[HttpPost("add-item-to-cart/{ cartId}")]
-        //public IActionResult AddItemToCart(int cartId, [FromBody] CartItem cItem)
-        //{
-        //    var CheckIfAdded = _cartRepository.AddItemsToCart(cartId, cItem);
-        //    if (CheckIfAdded)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
+
+        [Authorize(Roles = "Customer")]
+        [HttpPost("add-item-to-cart/{userId}")]
+        public IActionResult AddItemToCart(int userId , CartItem newItem)
+        {
+            var CheckIfAdded = _cartRepository.AddItemsToCart(userId, newItem);
+            if (CheckIfAdded)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
     }
 }

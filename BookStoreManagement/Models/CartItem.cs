@@ -8,7 +8,6 @@ namespace DigitalBookStoreManagement.Models
         [Key]
         public int CartItemID { get; set; }
 
-        [Required(ErrorMessage = "Cart Id is required")]
         public int CartID{ get; set; }
 
         [Required(ErrorMessage = "BookId is Required.")]

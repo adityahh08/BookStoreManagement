@@ -3,6 +3,7 @@
 using DigitalBookStoreManagement.Data;
 using DigitalBookStoreManagement.Models;
 using DigitalBookStoreManagement.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 
 namespace DigitalBookStoreManagement.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
@@ -21,7 +23,7 @@ namespace DigitalBookStoreManagement.Controllers
             _orderRepository = orderRepository;
         }
 
-
+        [Authorize(Roles ="Admin")]
         [HttpGet("get-orders")]
         public ActionResult<List<Order>> GetOrders()
         {
@@ -33,6 +35,8 @@ namespace DigitalBookStoreManagement.Controllers
             return order;
         }
 
+
+        [Authorize(Roles ="Customer")]
         [HttpGet("{orderId}")]
         public ActionResult<Order> GetOrderByOrderId(int orderId)
         {
@@ -43,7 +47,7 @@ namespace DigitalBookStoreManagement.Controllers
             }
             return order;
         }
-
+        [Authorize(Roles ="Customer")]
         [HttpGet("user/{userId}")]
         public ActionResult<List<Order>> GetOrderByUserId(int userId)
         {
@@ -55,7 +59,9 @@ namespace DigitalBookStoreManagement.Controllers
             return order;
         }
 
-        [HttpPost]
+
+        [Authorize(Roles ="Customer")]
+        [HttpPost("place-order")]
         public ActionResult<bool> PlaceOrder(Order order)
         {
             var result = _orderRepository.PlaceOrder(order);
@@ -66,8 +72,8 @@ namespace DigitalBookStoreManagement.Controllers
             return BadRequest();
         }
 
-
-        [HttpDelete("{orderId}")]
+        [Authorize(Roles ="Customer")]
+        [HttpDelete("cancel-order/{orderId}")]
         public ActionResult<bool> CancelOrder(int orderId)
         {
             var result = _orderRepository.CancelOrder(orderId);
@@ -77,7 +83,7 @@ namespace DigitalBookStoreManagement.Controllers
             }
             return NotFound();
         }
-
+        [Authorize(Roles ="Admin")]
         [HttpPut("{orderId}/order-status")]
         public ActionResult<bool> UpdateStatus(int orderId, [FromBody] string status)
         {
@@ -90,7 +96,7 @@ namespace DigitalBookStoreManagement.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpPut("{id}/update-total")]
         public IActionResult UpdateOrderTotal(int id)
         {
